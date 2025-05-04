@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Vocabulary Flash Card Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+    h1 { color: #333; }
+    .card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+    .card {
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      width: 200px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .card.flipped { background: #e0f7fa; }
+    .matched { background: #a5d6a7 !important; }
+  </style>
+</head>
+<body>
+  <h1>Medical Vocabulary Flash Card Game</h1>
+  <p>Click cards to find matching pairs!</p>
+  <div class="card-container" id="gameBoard"></div>
+
+  <script>
+    const vocabPairs = [
+      ["Alopecia", "Hair loss"],
+      ["Cachexia", "Physical wasting with loss of weight and muscle mass"],
+      ["Concomitant", "Occurring or existing at the same time as something else"],
+      ["Ecchymoses", "Bruising caused by bleeding under the skin"],
+      ["Fluid shift", "Movement of fluid from the blood to the interstitial space"],
+      ["Hepatotoxicity", "Liver damage caused by chemical substances"],
+      ["Leukocytosis", "Increased white blood cell count"],
+      ["Lymphocytosis", "Increase in lymphocytes in the blood"],
+      ["Malaise", "General feeling of discomfort or uneasiness"],
+      ["Necrosis", "Death of body tissue"],
+      ["Neuroleptic", "A class of antipsychotic drugs"],
+      ["Paresis", "Muscle weakness"],
+      ["Petechiae", "Small red or purple spots caused by bleeding into the skin"],
+      ["Pharmacodynamics", "Study of the effects of drugs on the body"],
+      ["Pharmacokinetic", "Study of drug movement through the body"],
+      ["Plexopathy", "Disorder affecting a network of nerves"],
+      ["Purpura", "Purple spots from small blood vessel bleeding"],
+      ["Somnolence", "Sleepiness or drowsiness"],
+      ["Striae", "Stretch marks"],
+      ["Tachycardia", "Abnormally rapid heart rate"],
+      ["Tardive dyskinesia", "Involuntary movements due to long-term antipsychotic use"],
+      ["Urticaria", "Hives or skin rash with itching"],
+      ["Hyperkalemia", "High potassium levels in the blood"],
+      ["Hypercalcemia", "High calcium levels in the blood"],
+      ["Hypernatremia", "High sodium levels in the blood"],
+      ["Hypocalcemia", "Low calcium levels in the blood"]
+    ];
+
+    let cards = [];
+    vocabPairs.forEach(([term, def]) => {
+      cards.push({ text: term, pair: def });
+      cards.push({ text: def, pair: term });
+    });
+
+    cards = cards.sort(() => 0.5 - Math.random());
+
+    const board = document.getElementById('gameBoard');
+    let flippedCards = [];
+
+    function createCard(text, pair) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.textContent = '?';
+      card.dataset.text = text;
+      card.dataset.pair = pair;
+
+      card.addEventListener('click', () => {
+        if (card.classList.contains('matched') || card.classList.contains('flipped') || flippedCards.length === 2) return;
+
+        card.textContent = card.dataset.text;
+        card.classList.add('flipped');
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+          const [first, second] = flippedCards;
+          if (first.dataset.pair === second.dataset.text) {
+            first.classList.add('matched');
+            second.classList.add('matched');
+          } else {
+            setTimeout(() => {
+              first.textContent = '?';
+              second.textContent = '?';
+              first.classList.remove('flipped');
+              second.classList.remove('flipped');
+            }, 1000);
+          }
+          flippedCards = [];
+        }
+      });
+      return card;
+    }
+
+    cards.forEach(card => {
+      board.appendChild(createCard(card.text, card.pair));
+    });
+  </script>
+</body>
+</html>
